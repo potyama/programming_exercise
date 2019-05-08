@@ -15,7 +15,7 @@ int main(){
 
 //      while(1){
             Gamescreen(map);
-            (Inputscreen(),map);
+            Inputscreen();
   //    }
 }
 
@@ -28,8 +28,8 @@ void Gamescreen(int map[][8]){
             for(j=0;j<8;j++){
                   if(map[i][j] == -1){ 
                         printf(". ");
-                  }else{
-                        printf("%d",map[i][j]);
+                  }else if(map[i][j] == 10){
+                        printf("%s",map[i][j]);
                        
             }
             printf("\n");
@@ -69,41 +69,35 @@ int Inputscreen(){
 
 //Check bomb 
 int checkbomb(int i,int j,int map[][8]){
-      if(i < 0 || j < 0 || i >= 9 || j >= 9)countbomb(Inputscreen(),map);      
-      
       if(map[i][j] == 1){
             Gameoverscreen();
-      }
-      if(map[i][j] == -1){
+      }else if(map[i][j] == 0){
             countbomb(i,j,map);
       }
-
-      if(map[i][j] == 0){
-            checkbomb(i-1,j-1,map);
-            checkbomb(i-1,j,map);
-            checkbomb(i-1,j+1,map);
-            checkbomb(i,j-1,map);
-            checkbomb(i,j+1,map);
-            checkbomb(i+1,j-1,map);
-            checkbomb(i+1,j,map);
-            checkbomb(i+1,j+1,map);
-      }
-      return;
 }
 
-void countbomb(int i,int j,int map[][8]){
-      int count=0;
+int countbomb(int i,int j,int map[][8]){
       
-            if(map[i-1][j-1] == 1)count++;
-            if(map[i-1][j] == 1)count++;
-            if(map[i-1][j+1] == 1)count++;
-            if(map[i][j-1] == 1)count++;
-            if(map[i][j+1] == 1)count++;
-            if(map[i+1][j-1] == 1)count++;
-            if(map[i+1][j] == 1)count++;
-            if(map[i+1][j+1] == 1)count++;
-            
-            map[i][j] = count;
+
+      if(map[i-1][j-1] == -1){
+            map[i-1][j-1] = 0;
+      }
+      if(map[i-1][j] == -1){
+            map[i-1][j] = 0;
+      }
+      if(map[i-1][j+1] == -1){
+            map[i-1][j+1] = 0;
+      }
+      if(map[i][j-1] == -1){
+      }
+      if(map[i][j+1] == -1){
+      }
+      if(map[i+1][j-1] == -1){
+      }
+      if(map[i+1][j] == -1){
+      }
+      if(map[i+1][j+1] == -1){
+      }
 }
 
 

@@ -1,11 +1,21 @@
 #include <stdio.h>
 
-int main(){
-            printf("*** M Sweeper ***\n\
-コマンドの入力:x y [asm]\n\
-  x y … 座標[0-7]\n\
-  a   … (x,y)の周囲の点を自動的にチェック\n\
-  s   … (x,y)を安全な点としてチェック\n\
-  m   … (x,y)にMマークをつける\n");
-}
+void check(int k[]);
 
+int main(){
+      int i;
+      int k[12];
+
+      for(i = 0; i <= 10; i++){
+            k[i] = 0;
+      }
+      check(k);
+      for(i = 0; i <= 10; i++){
+            printf("%d",k[i]);
+      }
+}
+void check(int k[]){
+      int x=5;
+      
+      k[x] = 10;
+}
