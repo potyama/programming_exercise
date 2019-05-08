@@ -1,22 +1,32 @@
 #include <stdio.h>
+#include <stdlib.h>
 
 int Initmap(int map[8][8]);
 void Initscreen();
 void Gamescreen(int map[8][8]);
-int Inputscreen();
+void checkbomb(int i,int j,int map[8][8]);
+void countbomb(int i,int j,int map[8][8]);
+//void Inputscreen(int **map);
+void GameoverScreen();
 
 int main(){
 
       int x,y;
       int map[8][8];
+      int *b[8];
+      char command;
 
       Initmap(map);
       Initscreen();
-
-//      while(1){
-            Gamescreen(map);
-            (Inputscreen(),map);
-  //    }
+      for(x = 0; x < 8;x++){
+            for(y = 0; y < 8;y++) b[x] = map[x];
+      }
+      while(1){
+      Gamescreen(map);
+      printf("Please enter a command:");
+      scanf("%d %d %c",&x,&y,&command);
+      checkbomb(x,y,map);
+      }
 }
 
 //Display the game screen
@@ -28,11 +38,16 @@ void Gamescreen(int map[][8]){
             for(j=0;j<8;j++){
                   if(map[i][j] == -1){ 
                         printf(". ");
+                  }else if(map[i][j] == 0){
+                        printf(" ");
+
                   }else{
                         printf("%d",map[i][j]);
                        
+                  }
             }
             printf("\n");
+            
       }
 }
 //Initialize the array
@@ -59,20 +74,20 @@ printf("\n");
 }
 
 // Input
-int Inputscreen(){
+/*
+void Inputscreen(){
       int x,y;
       char command;
       printf("Please enter a command:");
       scanf("%d %d %c",&x,&y,&command);
-      
+      return x,y;      
 }
-
+*/
 //Check bomb 
-int checkbomb(int i,int j,int map[][8]){
-      if(i < 0 || j < 0 || i >= 9 || j >= 9)countbomb(Inputscreen(),map);      
-      
+void checkbomb(int i,int j,int map[][8]){
+      if(i < 0 || j < 0 || i >= 9 || j >= 9)return;
       if(map[i][j] == 1){
-            Gameoverscreen();
+            GameoverScreen();
       }
       if(map[i][j] == -1){
             countbomb(i,j,map);
@@ -107,3 +122,9 @@ void countbomb(int i,int j,int map[][8]){
 }
 
 
+void GameoverScreen(){
+      printf("\n");
+      printf("GameOver");
+      printf("\n\n");
+      exit(0);
+}
