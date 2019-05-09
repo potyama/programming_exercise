@@ -11,22 +11,20 @@ void GameoverScreen();
 
 int main(){
 
-      int x,y;
+      int x=0,y=0;
+//      char dummy;
       int map[8][8];
-      int *b[8];
-      char command;
+//      char command;
 
       Initmap(map);
       Initscreen();
-      for(x = 0; x < 8;x++){
-            for(y = 0; y < 8;y++) b[x] = map[x];
-      }
       while(1){
       Gamescreen(map);
       printf("Please enter a command:");
-      scanf("%d %d %c",&x,&y,&command);
+  //    scanf("%d %d %c",&x,&y,&command);
+      scanf("%d%d",&x, &y);
       checkbomb(x,y,map);
-      }
+    }
 }
 
 //Display the game screen
@@ -36,18 +34,18 @@ void Gamescreen(int map[][8]){
       for(i=0;i<8;i++){
             printf("%d ",i);
             for(j=0;j<8;j++){
-                  if(map[i][j] == -1){ 
+                  if(map[i][j] == -1 ){
                         printf(". ");
-                  }else if(map[i][j] == 0){
-                        printf(" ");
+                  //}else if(map[i][j] == 0){
+                    //    printf(" ");
 
                   }else{
-                        printf("%d",map[i][j]);
-                       
+                        printf("%d ",map[i][j]);
+
                   }
             }
             printf("\n");
-            
+
       }
 }
 //Initialize the array
@@ -56,7 +54,11 @@ int Initmap(int map[][8]){
 
       for(i=0;i<8;i++){
             for(j=0;j<8;j++){
+                  if(i==6 && j == 6){
+                        map[i][j] = 1;
+                  }else{
                   map[i][j] = -1;
+                  }
             }
       }
 }
@@ -80,20 +82,22 @@ void Inputscreen(){
       char command;
       printf("Please enter a command:");
       scanf("%d %d %c",&x,&y,&command);
-      return x,y;      
+      return x,y;
 }
 */
-//Check bomb 
+//Check bomb
 void checkbomb(int i,int j,int map[][8]){
-      if(i < 0 || j < 0 || i >= 9 || j >= 9)return;
+      printf("%d/%d\n",i,j);
+      if(i < 0 || j < 0 || i > 8 || j > 8)return;
+
       if(map[i][j] == 1){
             GameoverScreen();
       }
-      if(map[i][j] == -1){
+      if(map[i][j] == -1 ){
+//      printf("%d->%d\n",i,j);
             countbomb(i,j,map);
       }
-
-      if(map[i][j] == 0){
+      if(map[i][j] >= 0){
             checkbomb(i-1,j-1,map);
             checkbomb(i-1,j,map);
             checkbomb(i-1,j+1,map);
@@ -108,7 +112,7 @@ void checkbomb(int i,int j,int map[][8]){
 
 void countbomb(int i,int j,int map[][8]){
       int count=0;
-      
+
             if(map[i-1][j-1] == 1)count++;
             if(map[i-1][j] == 1)count++;
             if(map[i-1][j+1] == 1)count++;
@@ -117,8 +121,9 @@ void countbomb(int i,int j,int map[][8]){
             if(map[i+1][j-1] == 1)count++;
             if(map[i+1][j] == 1)count++;
             if(map[i+1][j+1] == 1)count++;
-            
+
             map[i][j] = count;
+            printf("map[%d][%d] = %d\n",i,j,map[i][j]);
 }
 
 
