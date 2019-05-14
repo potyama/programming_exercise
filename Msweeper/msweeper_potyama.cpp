@@ -1,20 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#define END -1
+#define GameOver -2
 
-/*
-int Initmap(int map[8][8]);
-void Initscreen();
-void bombset(int n,int map[][8]);
-void Gamescreen(int map[8][8]);
-void checkbomb(int i,int j,int map[8][8]);
-void countbomb(int i,int j,int map[8][8]);
-//void Inputscreen(int **map);
-void GameoverScreen();
-void setflag(int x,int y,int map[][8]);
-void resetflag(int x,int y,int map[][8]);
-*/
+
 struct cell{
+      int check = -1;
+      int count = 0;
       bool bomb;
       bool flag;
 };
@@ -31,6 +24,37 @@ public:
       void setflag(int x,int y,int map[][8]);
       void resetflag(int x,int y,int map[][8]);
 };
+
+//Display the input screen
+ms::ms(){
+      printf("*** M Sweeper ***\n\
+      コマンドの入力:x y [asm]\n\
+        x y … 座標[0-7]\n\
+        a   … (x,y)の周囲の点を自動的にチェック\n\
+        s   … (x,y)を安全な点としてチェック\n\
+        m   … (x,y)にMマークをつける\n");
+      printf("\n");
+      for(int i=0;i<8;i++){
+            for(int j=0;j<8;j++){
+                  map[i][j].bomb = false;
+                  map[i][j].flag = false;
+                  map[i][j].check = -1;
+                  map[i][j].count = 0;
+            }
+      }
+}
+
+void ms::bombset(int n){
+      srand(time(NULL));
+      int m = n;
+     for(int i=0;i<n;i++){
+            int x = (rand() % 8);
+            int y = (rand() % 8);
+            map[x][y] = 1;
+     }
+}
+
+
 //Display the game screen
 void ms::Gamescreen(){
       printf("  0 1 2 3 4 5 6 7\n");
@@ -51,39 +75,6 @@ void ms::Gamescreen(){
       printf("\n");
       }
 }
-
-//Display the input screen
-ms::ms(){
-            printf("*** M Sweeper ***\n\
-コマンドの入力:x y [asm]\n\
-  x y … 座標[0-7]\n\
-  a   … (x,y)の周囲の点を自動的にチェック\n\
-  s   … (x,y)を安全な点としてチェック\n\
-  m   … (x,y)にMマークをつける\n");
-
-printf("\n");
-}
-
-//Initialize the array
-ms::ms(){
-      for(int i=0;i<8;i++){
-            for(int j=0;j<8;j++){
-                  map[i][j].bomb = false;
-                  map[i][j].flag = false;
-            }
-      }
-}
-
-void ms::bombset(int n){
-      srand(time(NULL));
-      int m = n;
-     for(int i=0;i<n;i++){
-            int x = ( rand() % 8);
-            int y = ( rand() % 8);
-            map[x][y] = 1;
-     }
-}
-
 // Input
 /*
 void Inputscreen(){
@@ -95,26 +86,25 @@ void Inputscreen(){
 }
 */
 //Check bomb
+//WTNBさんにきく
+//関数内から関数に渡す時(=再帰)につけるクラス名 ms.で良いのかmainで宣言した.Mineで良いのか
 void ms::checkbomb(int i,int j){
-      printf("%d/%d\n",i,j);
-      if(i < 0 || j < 0 || i > 8 || j > 8)return;
-
-      if(map[i][j] == 1){
+      if(i < 0 || i >= 8 || j < 0 || j >= 8 || map[i][j].check == 0)return;
+      if(map[i][j].bomb == true){
             GameoverScreen();
+            return;
       }
-      if(map[i][j] == -1 ){
-//      printf("%d->%d\n",i,j);
-            map[i][j] = countbomb(i,j,map);
-      }
-      if(map[i][j] >= 0){
-            checkbomb(i-1,j-1,map);
-            checkbomb(i-1,j,map);
-            checkbomb(i-1,j+1,map);
-            checkbomb(i,j-1,map);
-            checkbomb(i,j+1,map);
-            checkbomb(i+1,j-1,map);
-            checkbomb(i+1,j,map);
-            checkbomb(i+1,j+1,map);
+            map[i][j].count = countbomb(i,j);
+            map[i][j].check = 0;
+      if(map[i][j]. == -1){
+            checkbomb(i-1,j);
+            checkbomb(i-1,j-1);
+            checkbomb(i-1,j+1);
+            checkbomb(i+1,j);
+            checkbomb(i+1,j-1);
+            checkbomb(i-1,j+1);
+            checkbomb(i,j-1);
+            checkbomb(i+1,j+1);
       }
       return;
 }
@@ -122,28 +112,28 @@ void ms::checkbomb(int i,int j){
 int ms::countbomb(int x,int y){
       int count=0;
       if(0 < x){
-            if(map[i-1][j] == 1)count++;
+            if(map[i-1][j].bomb == true)count++;
             if(0 < y){
-                  if(map[i-1][j-1] == 1)count++;
+                  if(map[i-1][j-1].bomb == true)count++;
             }
             if(y < 8){
-                  if(map[i-1][j+1] == 1)count++;
+                  if(map[i-1][j+1].bomb == true)count++;
             }
       }
       if(x < 8){
-            if(map[i+1][j] == 1)count++;
+            if(map[i+1][j].bomb == true)count++;
             if(0 < y){
-                  if(map[i+1][j-1] == 1)count++;
+                  if(map[i+1][j-1].bomb == true)count++;
             }
             if(y < 8){
-                  if(map[i-1][j+1] == 1)count++;
+                  if(map[i-1][j+1].bomb == true)count++;
             }
       }
       if(0 < y){
-            if(map[i][j-1] == 1)count++;
+            if(map[i][j-1].bomb == true)count++;
       }
       if(y < 8){
-            if(map[i+1][j+1] == 1)count++;
+            if(map[i+1][j+1].bomb == true)count++;
       }
       return count;
 }
