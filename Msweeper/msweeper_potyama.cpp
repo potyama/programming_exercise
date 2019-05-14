@@ -6,23 +6,25 @@
 
 
 struct cell{
-      int check = -1;
-      int count = 0;
-      bool bomb;
-      bool flag;
+      int check = -1;//開けたかの判定　-1だと開いていない|0だと開いている
+      int count = 0;//爆弾の数　countbombで数えている。
+      bool bomb;//そのマスにbombがあるかどうか false ない|true ある
+      bool flag;//旗　false 旗を置いていない |true 旗を置いている
 };
+
+
 class ms{
       struct cell map[8][8];
 public:
       void Initscreen();
       void bombset(int n);
       void Gamescreen();
-      void checkbomb(int i,int j,int map[8][8]);
-      void countbomb(int i,int j,int map[8][8]);
+      void checkbomb(int i,int j);
+      void countbomb(int i,int j);
       //void Inputscreen(int **map);
       void GameoverScreen();
-      void setflag(int x,int y,int map[][8]);
-      void resetflag(int x,int y,int map[][8]);
+      void setflag(int x,int y]);
+      void resetflag(int x,int y);
 };
 
 //Display the input screen
