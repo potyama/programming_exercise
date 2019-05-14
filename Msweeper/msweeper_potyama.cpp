@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 
+/*
 int Initmap(int map[8][8]);
 void Initscreen();
 void bombset(int n,int map[][8]);
@@ -12,33 +13,26 @@ void countbomb(int i,int j,int map[8][8]);
 void GameoverScreen();
 void setflag(int x,int y,int map[][8]);
 void resetflag(int x,int y,int map[][8]);
-
+*/
 struct cell{
       bool bomb;
       bool flag;
-}
-
-int main(){
-
-      int x=0,y=0;
-      int map[8][8];
-//      char command;
-
-      Initmap();
-      Initscreen();
-      scanf("%d",int n);
-      bombset(n,map);
-      while(1){
-      Gamescreen(map);
-      printf("Please enter a command:");
-  //    scanf("%d %d %c",&x,&y,&command);
-      scanf("%d%d",&x, &y);
-      checkbomb(x,y,map);
-    }
-}
-
+};
+class ms{
+      struct cell map[8][8];
+public:
+      void Initscreen();
+      void bombset(int n);
+      void Gamescreen();
+      void checkbomb(int i,int j,int map[8][8]);
+      void countbomb(int i,int j,int map[8][8]);
+      //void Inputscreen(int **map);
+      void GameoverScreen();
+      void setflag(int x,int y,int map[][8]);
+      void resetflag(int x,int y,int map[][8]);
+};
 //Display the game screen
-void Gamescreen(int map[][8]){
+void ms::Gamescreen(){
       printf("  0 1 2 3 4 5 6 7\n");
       for(int i=0;i<8;i++){
             for(int j=0;j<8;j++){
@@ -57,29 +51,9 @@ void Gamescreen(int map[][8]){
       printf("\n");
       }
 }
-//Initialize the array
-void Initmap(int map[][8]){
-      for(int i=0;i<8;i++){
-            for(int j=0;j<8;j++){
-                  map[i][j].bomb = false;
-                  map[i][j].flag = false;
-            }
-      }
-}
-
-void bombset(int n,int map[][8]){
-      srand(time(NULL));
-      int m = n;
-     for(int i=0;i<n;i++){
-            int x = ( rand() % 8);
-            int y = ( rand() % 8);
-            map[x][y] = 1;
-     }
-}
-
 
 //Display the input screen
-void Initscreen(){
+ms::ms(){
             printf("*** M Sweeper ***\n\
 コマンドの入力:x y [asm]\n\
   x y … 座標[0-7]\n\
@@ -88,6 +62,26 @@ void Initscreen(){
   m   … (x,y)にMマークをつける\n");
 
 printf("\n");
+}
+
+//Initialize the array
+ms::ms(){
+      for(int i=0;i<8;i++){
+            for(int j=0;j<8;j++){
+                  map[i][j].bomb = false;
+                  map[i][j].flag = false;
+            }
+      }
+}
+
+void ms::bombset(int n){
+      srand(time(NULL));
+      int m = n;
+     for(int i=0;i<n;i++){
+            int x = ( rand() % 8);
+            int y = ( rand() % 8);
+            map[x][y] = 1;
+     }
 }
 
 // Input
@@ -101,7 +95,7 @@ void Inputscreen(){
 }
 */
 //Check bomb
-void checkbomb(int i,int j,int map[][8]){
+void ms::checkbomb(int i,int j){
       printf("%d/%d\n",i,j);
       if(i < 0 || j < 0 || i > 8 || j > 8)return;
 
@@ -125,7 +119,7 @@ void checkbomb(int i,int j,int map[][8]){
       return;
 }
 
-int countbomb(int x,int y,int map[][8]){
+int ms::countbomb(int x,int y){
       int count=0;
       if(0 < x){
             if(map[i-1][j] == 1)count++;
@@ -155,16 +149,32 @@ int countbomb(int x,int y,int map[][8]){
 }
 
 
-void GameoverScreen(){
+ms::GameoverScreen(){
       printf("\n");
       printf("GameOver");
       printf("\n\n");
       exit(0);
 }
 
-void setflag(int x,int y){
+void ms::setflag(int x,int y){
       map[x][y].flag = true;
 }
-void resetflag(int x,int y){
-      map[x][y],flag = false;
+void ms::resetflag(int x,int y){
+      map[x][y].flag = false;
+}
+
+
+int main(){
+
+      int x=0,y=0;
+      ms Mine;
+      Mine.bombset(10);
+
+      Mine.
+//      char command;
+      printf("Please enter a command:");
+  //    scanf("%d %d %c",&x,&y,&command);
+      scanf("%d%d",&x, &y);
+      checkbomb(x,y,map);
+    }
 }

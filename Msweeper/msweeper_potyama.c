@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <time.h>
 
-/*
 int Initmap(int map[8][8]);
 void Initscreen();
 void bombset(int n,int map[][8]);
@@ -13,24 +12,31 @@ void countbomb(int i,int j,int map[8][8]);
 void GameoverScreen();
 void setflag(int x,int y,int map[][8]);
 void resetflag(int x,int y,int map[][8]);
-*/
+
 struct cell{
       bool bomb;
       bool flag;
-};
-class ms{
-public:
-      int Initmap(int map[8][8]);
-      void Initscreen();
-      void bombset(int n,int map[][8]);
-      void Gamescreen(int map[8][8]);
-      void checkbomb(int i,int j,int map[8][8]);
-      void countbomb(int i,int j,int map[8][8]);
-      //void Inputscreen(int **map);
-      void GameoverScreen();
-      void setflag(int x,int y,int map[][8]);
-      void resetflag(int x,int y,int map[][8]);
-};
+}
+
+int main(){
+
+      int x=0,y=0;
+      int map[8][8];
+//      char command;
+
+      Initmap();
+      Initscreen();
+      scanf("%d",int n);
+      bombset(n,map);
+      while(1){
+      Gamescreen(map);
+      printf("Please enter a command:");
+  //    scanf("%d %d %c",&x,&y,&command);
+      scanf("%d%d",&x, &y);
+      checkbomb(x,y,map);
+    }
+}
+
 //Display the game screen
 void Gamescreen(int map[][8]){
       printf("  0 1 2 3 4 5 6 7\n");
@@ -160,25 +166,5 @@ void setflag(int x,int y){
       map[x][y].flag = true;
 }
 void resetflag(int x,int y){
-      map[x][y].flag = false;
-}
-
-
-int main(){
-
-      int x=0,y=0;
-      int map[8][8];
-//      char command;
-
-      Initmap();
-      Initscreen();
-      scanf("%d",int n);
-      bombset(n,map);
-      while(1){
-      Gamescreen(map);
-      printf("Please enter a command:");
-  //    scanf("%d %d %c",&x,&y,&command);
-      scanf("%d%d",&x, &y);
-      checkbomb(x,y,map);
-    }
+      map[x][y],flag = false;
 }
