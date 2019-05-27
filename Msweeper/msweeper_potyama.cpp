@@ -10,7 +10,6 @@ struct cell{
 
 
 class Mine{
-      int i = 0;
       struct cell map[8][8];
 public:
       Mine();
@@ -44,30 +43,38 @@ m   … (x,y)にMマークをつける\n");
                   map[i][j].count = 0;
             }
       }
-      map[0][0].bomb = true;
 }
 
 void Mine::bombset(int n){
       srand(time(NULL));
-      int i,j,k=0;
+      int i,j,count=0,count2=0;
       bool tmp;
 
       for(i=0;i<8;i++){
             for(j=0;j<8;j++){
-                  if(k >= n)break;
+                  if(count >= n)break;
                  map[i][j].bomb = true;
-                 k++;
+                 count++;
            }
       }
-     for(i=0;i<8;i++){
+      for(i=0;i<8;i++){
            for(j=0;j<8;j++){
+                 if(count2 >= n)break;
                   int x = (rand() % 8);
                   int y = (rand() % 8);
                   tmp = map[i][j].bomb;
                   map[i][j].bomb = map[x][y].bomb;
                   map[x][y].bomb = tmp;
+                  printf("change map[%d][%d] = map[%d][%d] : %d = %d\n",i,j,x,y,map[i][j].bomb,map[x][y].bomb);
+                  count2++;
            }
      }
+
+      for(i=0;i<8;i++){
+           for(j=0;j<8;j++){
+                 printf("map[%d][%d].bomb=%di\n",i,j,map[i][j].bomb);
+           }
+      }
 }
 
 
@@ -111,18 +118,26 @@ void Mine::checkbomb(int i,int j){
             map[i][j].check = true;
             i++;
       
-      if(map[i][j].bomb == true){
+      if(map[i][j].bomb == 1){
             GameoverScreen(i,j);
       }
 
       if(map[i][j].count == 0){
+  //          printf("左上\n");
             checkbomb(i-1,j-1);
+    //        printf("上\n");
             checkbomb(i-1,j);
+      //      printf("右上\n");
             checkbomb(i-1,j+1);
+        //    printf("左\n");
             checkbomb(i,j-1);
+          //  printf("右\n");
             checkbomb(i,j+1);
+            //printf("左下\n");
             checkbomb(i+1,j-1);
+            //printf("下\n");
             checkbomb(i+1,j);
+            //printf("右上");
             checkbomb(i+1,j+1);
       }
       return;
@@ -131,7 +146,7 @@ void Mine::checkbomb(int i,int j){
 int Mine::countbomb(int x,int y){
       int count=0;
 
-if(0 < x){
+      if(0 < x){
 		if(map[x-1][y].bomb == true){
 			count++;
 		}
@@ -222,10 +237,10 @@ int main(){
       int x=0,y=0,flag = 0;
       char a;
       Mine ms;
-      //ms.bombset(20);
+      ms.bombset(20);
       while(1){
-            ms.Gamescreen();
-            //ms.debugprint();
+           // ms.Gamescreen();
+            ms.debugprint();
             printf("Please enter a command:");
             scanf("%d %d %c",&x,&y,&a);
             flag = ms.option(x,y,a);
