@@ -7,9 +7,7 @@
 #define NONE 0
 #define PLAYER 1
 #define ENEMY 2
-#define OUT 3
-#define SCRAP 4
-#define WARP 5
+#define SCRAP 3
 typedef struct robots{
   int x;
   int y;
@@ -19,12 +17,12 @@ typedef struct robots{
 
 void Map_init(int map[X][Y]);
 void Enemy_make(int map[X][Y],int level);
-void State(int map[X][Y],int level,robots player);
+void State(int map[X][Y],int level,int k,robots player);
 void Display(int map[X][Y],int level,robots player);
-void Enemy(int map[X][Y],int x,int y,int level,robots player);
+void Player(int map[X][Y],robots *player,int input);
+void Enemy(int map[X][Y],int x,int y);
+void check(int map[X][Y],int level);
 void GameOver(int map[X][Y],int level,robots player);
-int check(int map[X][Y],int level);
-int Player(int map[X][Y],robots *player,int input,int level);
 
 int main(void){
       robots player;
@@ -32,7 +30,7 @@ int main(void){
       int map[X][Y];
       int input;
       int level;
-      int flag;
+      int k = 0;
       char dummy;
 
       player.x = player.y = 0;
@@ -42,12 +40,12 @@ int main(void){
       map[0][0] = PLAYER;
   
       while(1){
-            State(map,level,player);
+            State(map,level,k,player);
             Display(map,level,player);
             printf("Input Direction : ");
             scanf("%d%c",&input,&dummy);
-            flag = Player(map,&player,input,level);
-            //if(flag == OUT)GameOver(map,level,player);
+            k++;
+            Player(map,&player,input);
       }
       return 0;
 }
@@ -78,10 +76,11 @@ void Enemy_make(int map[X][Y],int level){
       }
 }
 
-void State(int map[X][Y],int level,robots player){
+void State(int map[X][Y],int level,int k,robots player){
       int i,j,m,l,x,y;
       int flag = 0;
-
+      int tmp;
+      if(k == 0)return;
       for(i=0; i<X; i++){
             for(j=0; j<Y; j++){
             if(i == player.x && j == player.y){
@@ -90,10 +89,8 @@ void State(int map[X][Y],int level,robots player){
                   map[x][y] = PLAYER;
                   flag = 1;
             }
-            if(i != player.x || j != player.y){
-                  if(map[i][j] != ENEMY && map[i][j] != SCRAP){
-                        map[i][j] = NONE;
-                  }
+            if((i != player.x || j != player.y) && map[i][j] != ENEMY){
+                  map[i][j] = NONE;
             }
             
             if(map[i][j] == ENEMY || map[i][j] == SCRAP)flag = 1;
@@ -103,18 +100,8 @@ void State(int map[X][Y],int level,robots player){
             flag = 0;
             }
       }
-      Enemy(map,x,y,level,player);
-      for(i = 0;i < X; i++){
-            for(j = 0;j < Y; j++){
-            //     if(map[i][j] == OUT)GameOver(map,level,player);
-            }
-      } 
-      flag = check(map,level);
-      if(flag == 0){
-            level++;
-            Map_init(map);
-            Enemy_make(map,level);
-      }
+      Enemy(map,x,y);
+      check(map,level);
 }
 
 void Display(int map[X][Y],int level,robots player){
@@ -149,9 +136,8 @@ void Display(int map[X][Y],int level,robots player){
       printf("\n");
 }
 
-int Player(int map[X][Y],robots *player,int input,int level){
+void Player(int map[X][Y],robots *player,int input){
       int i=0;
-      int flag = 0;
       srand((unsigned)time(NULL));
       switch(input){
             case 0:
@@ -163,113 +149,75 @@ int Player(int map[X][Y],robots *player,int input,int level){
                         player -> y = rand()%Y;
                   }
                   map[player -> x][player -> y] = PLAYER ;
+                  //printf("%d-%d\n",player -> x,player->y);
                   break;
             case 1: 
-                  map[player -> x][player -> y] = NONE;
+                  //if(map[(player -> x )+ 1][(player -> y )- 1] == ENEMY)i++;
                   if(player -> x < 20){
                         player -> x += 1;
                   }
                   if(player -> y > 0){
                         player -> y -= 1;
-                  }if(map[player -> x][player -> y] == ENEMY){
-                        map[player -> x][player -> y] == OUT;
-                  }else{
-                        map[player -> x][player -> y] == PLAYER;
                   }
                   break;
             case 2:
-                  map[player -> x][player -> y] = NONE;
+                  //if(map[(player -> x )+ 1][(player -> y )] == ENEMY)i++;
                   if(player -> x < 20){
                         player -> x += 1;
                   }
-                  if(map[player -> x][player -> y] == ENEMY){
-                        map[player -> x][player -> y] == OUT;
-                  }else{
-                        map[player -> x][player -> y] == PLAYER;
-                  }
                   break;
             case 3:
-                  map[player -> x][player -> y] = NONE;
+               //   if(map[(player -> x )+ 1][(player -> y ) + 1] == ENEMY)i++;
                   if(player -> x < 20){
                         player -> x += 1;
                   }
                   if(player -> y < 60){
                       player -> y += 1;
                   }
-                  if(map[player -> x][player -> y] == ENEMY){
-                        map[player -> x][player -> y] == OUT;
-                  }else{
-                        map[player -> x][player -> y] == PLAYER;
-                  }
                   break; 
             case 4:
-                  map[player -> x][player -> y] = NONE;
+                 // if(map[(player -> x )][(player -> y ) - 1] == ENEMY)i++;
                   if(player -> y > 0){
                         player -> y -= 1;
-                  }
-                  if(map[player -> x][player -> y] == ENEMY){
-                        map[player -> x][player -> y] == OUT;
-                  }else{
-                        map[player -> x][player -> y] == PLAYER;
                   }
                   break;
             case 6:
-                  map[player -> x][player -> y] = NONE;
+                  //if(map[(player -> x )][(player -> y ) + 1] == ENEMY)i++;
                   if(player -> y < 60){
                         player -> y += 1;
                   }
-                  if(map[player -> x][player -> y] == ENEMY){
-                        map[player -> x][player -> y] == OUT;
-                  }else{
-                        map[player -> x][player -> y] == PLAYER;
-                  }
                   break;
             case 7:
-                  map[player -> x][player -> y] = NONE;
+                  //if(map[(player -> x )- 1][(player -> y ) - 1] == ENEMY)i++;
                   if(player -> x > 0){
                         player -> x -= 1;
                   }
                   if(player -> y > 0){
                         player -> y -= 1;
                   }
-                  if(map[player -> x][player -> y] == ENEMY){
-                        map[player -> x][player -> y] == OUT;
-                  }else{
-                        map[player -> x][player -> y] == PLAYER;
-                  }
                   break;
             case 8:
-                  map[player -> x][player -> y] = NONE;
+                  //if(map[(player -> x ) - 1][(player -> y )] == ENEMY)i++;
                   if(player -> x > 0){
                         player -> x -= 1;
                   }
-                  if(map[player -> x][player -> y] == ENEMY){
-                        map[player -> x][player -> y] == OUT;
-                  }else{
-                        map[player -> x][player -> y] == PLAYER;
-                  }
                   break;
             case 9:
-                  map[player -> x][player -> y] = NONE;
+                  //if(map[(player -> x )- 1][(player -> y ) + 1] == ENEMY)i++;
                   if(player -> y < 60){
                         player -> y += 1;
                   }
                   if(player -> x > 0){
                         player -> x -= 1;
-                  }
-                  if(map[player -> x][player -> y] == ENEMY){
-                        map[player -> x][player -> y] == OUT;
-                  }else{
-                        map[player -> x][player -> y] == PLAYER;
                   }
                   break;
             default:
                   break;
       }
-      if(map[player -> x][player -> y] == OUT)return OUT;
+      if(i == 1)GameOver(map,level,player);
 }
 
-void Enemy(int map[X][Y],int x,int y,int level,robots player){
+void Enemy(int map[X][Y],int x,int y){
       int i,j;
       for(i = 0; i < X; i++){
             for(j = 0; j < Y; j++){
@@ -279,24 +227,30 @@ void Enemy(int map[X][Y],int x,int y,int level,robots player){
                                     if(map[i+1][j+1] == ENEMY || map[i+1][j+1] == SCRAP){
                                           map[i][j] = NONE;
                                           map[i+1][j+1] = SCRAP;
+                                    }else if(map[i+1][j+1] == PLAYER){
+                                          GameOver(map,level,player);
                                     }else{
-                                          map[i+1][j+1] += map[i][j];
+                                          map[i+1][j+1] = map[i][j];
                                           map[i][j] = NONE;
                                     }
                                }else if(y == j){
                                     if(map[i+1][j] == ENEMY || map[i+1][j] == SCRAP){
                                           map[i][j] = NONE;
                                           map[i+1][j] = SCRAP;
+                                    }else if(map[i+1][j] == PLAYER){
+                                          GameOver(map,level,player);
                                     }else{
-                                          map[i+1][j] += map[i][j];
+                                          map[i+1][j] = map[i][j];
                                           map[i][j] = NONE;
                                     }
                               }else{
                                     if(map[i+1][j-1] == ENEMY || map[i+1][j-1] == SCRAP){
-                                          map[i][j] = SCRAP;
+                                          map[i][j] = NONE;
                                           map[i+1][j-1] = SCRAP;
+                                    }else if(map[i+1][j-1] == PLAYER){
+                                          GameOver(map,level,player);
                                     }else{
-                                          map[i+1][j-1] += map[i][j];
+                                          map[i+1][j-1] = map[i][j];
                                           map[i][j] = NONE;
                                     }
                               }
@@ -305,16 +259,20 @@ void Enemy(int map[X][Y],int x,int y,int level,robots player){
                                     if(map[i][j+1] == ENEMY || map[i][j+1] == SCRAP){
                                           map[i][j] = NONE;
                                           map[i][j+1] = SCRAP;
+                                    }else if(map[i][j+1] == PLAYER){
+                                          GameOver(map,level,player);
                                     }else{
-                                          map[i][j+1] += map[i][j];
+                                          map[i][j+1] = map[i][j];
                                           map[i][j] = NONE;
                                     }
                               }else if(y < j){
                                     if(map[i][j-1] == ENEMY || map[i][j-1] == SCRAP){
                                           map[i][j] = NONE;
                                           map[i][j-1] = SCRAP;
+                                    }else if(map[i][j-1] == PLAYER){
+                                          GameOver(map,level,player);
                                     }else{
-                                          map[i][j-1] += map[i][j];
+                                          map[i][j-1] = map[i][j];
                                           map[i][j] = NONE;
                                     }
                               }
@@ -323,34 +281,40 @@ void Enemy(int map[X][Y],int x,int y,int level,robots player){
                                     if(map[i-1][j+1] == ENEMY || map[i-1][j+1] == SCRAP){
                                           map[i][j] = NONE;
                                           map[i-1][j+1] = SCRAP;
+                                    }else if(map[i-1][j+1] == PLAYER){
+                                          GameOver(map,level,player);
                                     }else{
-                                          map[i-1][j+1] += map[i][j];
+                                          map[i-1][j+1] = map[i][j];
                                           map[i][j] = NONE;
                                     }
                               }else if(y == j){
                                     if(map[i-1][j] == ENEMY || map[i-1][j] == SCRAP){
                                           map[i][j] = NONE;
                                           map[i-1][j] = SCRAP;
+                                    }else if(map[i-1][j] == PLAYER){
+                                          GameOver(map,level,player);
                                     }else{
-                                          map[i-1][j] += map[i][j];
+                                          map[i-1][j] = map[i][j];
                                           map[i][j] = NONE;
                                     }
                               }else{
                                     if(map[i-1][j-1] == ENEMY || map[i-1][j-1] == SCRAP){
                                           map[i][j] = NONE;
                                           map[i-1][j-1] = SCRAP;
+                                    }else if(map[i-1][j-1] == PLAYER){
+                                          GameOver(map,level,player);
                                     }else{
-                                          map[i-1][j-1] += map[i][j];
+                                          map[i-1][j-1] = map[i][j];
                                           map[i][j] = NONE;
                                     }
                               }
                         }
                   }
             }
-      } 
+      }
 }
                  
-int check(int map[X][Y],int level){
+void check(int map[X][Y],int level){
       int i,j;
       int flag = 0;
       for(i = 0;i < X;i++){
@@ -359,15 +323,13 @@ int check(int map[X][Y],int level){
             }
       }
       if(flag == 0){
+            printf("GameClear!!");
             level++;
-            printf("GameClear!!\n");
-            printf("Next Level is %d\n",level);
       }
-      return flag;
+      return;
 }      
 
 void GameOver(int map[X][Y],int level,robots player){
-      printf("result -----------------------------------------\n\n\n\n\n");
       Display(map,level,player);
       printf("GameOver......");
       exit(0);
