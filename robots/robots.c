@@ -10,30 +10,32 @@
 #define OUT 3
 #define SCRAP 4
 #define WARP 5
+
 typedef struct robots{
   int x;
   int y;
 } robots;
 
-//extern char getChar(void);
+extern char getChar(void);
 
 void Map_init(int map[X][Y]);
 void Enemy_make(int map[X][Y],int level);
-void State(int map[X][Y],int level,robots player);
-void Display(int map[X][Y],int level,robots player);
+int State(int map[X][Y],int level,int score,robots player);
+void Display(int map[X][Y],int level,int score,robots player);
 void Enemy(int map[X][Y],int x,int y,int level,robots player);
-void GameOver(int map[X][Y],int level,robots player);
-int check(int map[X][Y],int level);
+void GameOver(int map[X][Y],int level,int score,robots player);
+int check(int map[X][Y],int level,int score);
 int Player(int map[X][Y],robots *player,int input,int level);
 
 int main(void){
       robots player;
 
       int map[X][Y];
-      int input;
+      char input;
       int level;
+      int score;
       int flag;
-      char dummy;
+      int up;
 
       player.x = player.y = 0;
       level = 1;
@@ -42,12 +44,23 @@ int main(void){
       map[0][0] = PLAYER;
   
       while(1){
-            State(map,level,player);
-            Display(map,level,player);
-            printf("Input Direction : ");
-            scanf("%d%c",&input,&dummy);
+            up = State(map,level,score,player); 
+            if(up == 1){
+                  if(level <= 8){
+                        score = (5*level) +(level * 10);
+                  }else{
+                        score = 40 + (level * 10);
+                  }
+                  level++;
+            }else{
+                  score = up;
+            }
+            Display(map,level,score,player);
+            printf("Input Direction :\n ");
+            input = getChar();
+            printf("%c\n",input);
             flag = Player(map,&player,input,level);
-            //if(flag == OUT)GameOver(map,level,player);
+            if(flag == OUT)GameOver(map,level,score,player);
       }
       return 0;
 }
@@ -62,11 +75,15 @@ void Map_init(int map[X][Y]){
 }
 
 void Enemy_make(int map[X][Y],int level){
-      int i,x=0,y=0;
+      int i,j,k=0,x=0,y=0;
       int tmp;
       srand((unsigned)time(NULL));
-
-      for(i = 0;i < 5*level;i++){
+      
+      for(j = 0;j < level;j++){
+            if(k*level > 40)break; 
+            k+=5;
+      }
+      for(i = 0;i < k;i++){
             map[0][i+1] = ENEMY;
       }
       for(i=0;i<5*level;i++){
@@ -78,8 +95,9 @@ void Enemy_make(int map[X][Y],int level){
       }
 }
 
-void State(int map[X][Y],int level,robots player){
+int State(int map[X][Y],int level,int score,robots player){
       int i,j,m,l,x,y;
+      int levelup = 0;
       int flag = 0;
 
       for(i=0; i<X; i++){
@@ -106,18 +124,23 @@ void State(int map[X][Y],int level,robots player){
       Enemy(map,x,y,level,player);
       for(i = 0;i < X; i++){
             for(j = 0;j < Y; j++){
-            //     if(map[i][j] == OUT)GameOver(map,level,player);
+                 if(map[i][j] == OUT)GameOver(map,level,score,player);
             }
       } 
-      flag = check(map,level);
+      flag = check(map,level,score);
       if(flag == 0){
             level++;
             Map_init(map);
+            map[0][0] = PLAYER;
             Enemy_make(map,level);
+            levelup = 1;
+      }else{
+            return score;
       }
+      return levelup;
 }
 
-void Display(int map[X][Y],int level,robots player){
+void Display(int map[X][Y],int level,int score,robots player){
 
       printf("+");
       for(int i = 0; i <= Y; i++)printf("-");
@@ -145,15 +168,15 @@ void Display(int map[X][Y],int level,robots player){
       printf("+");
       for(int i = 0; i <= Y; i++) printf("-");
       printf("+");
-
       printf("\n");
+      printf("(level:%d score:%d):?",level,score);
 }
 
 int Player(int map[X][Y],robots *player,int input,int level){
       int i=0;
       int flag = 0;
       srand((unsigned)time(NULL));
-      switch(input){
+      switch(input - '0'){
             case 0:
                   map[player -> x][player -> y] = NONE;
                   player -> x = rand()%X;
@@ -350,25 +373,32 @@ void Enemy(int map[X][Y],int x,int y,int level,robots player){
       } 
 }
                  
-int check(int map[X][Y],int level){
+int check(int map[X][Y],int level,int score){
       int i,j;
       int flag = 0;
+
       for(i = 0;i < X;i++){
             for(j = 0; j < Y;j++){
-                  if(map[i][j] == ENEMY)flag = 1;
+                  if(map[i][j] == ENEMY){
+                        flag = 1;
+                        score++;
+                  }
+                  if(map[i][j] == SCRAP)score++;
             }
       }
       if(flag == 0){
             level++;
             printf("GameClear!!\n");
             printf("Next Level is %d\n",level);
-      }
+      }else{
+            return score;
+      }           
       return flag;
 }      
 
-void GameOver(int map[X][Y],int level,robots player){
+void GameOver(int map[X][Y],int level,int score,robots player){
       printf("result -----------------------------------------\n\n\n\n\n");
-      Display(map,level,player);
+      Display(map,level,score,player);
       printf("GameOver......");
       exit(0);
 }
